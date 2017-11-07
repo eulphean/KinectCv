@@ -8,6 +8,11 @@
 
 using namespace std;
 
+// This flag uses a pre-stored background subtracted
+// video. Comment this line to use the Kinect, which is
+// connected.
+#define _USE_VIDEO
+
 class ofApp : public ofBaseApp{
 
 public:
@@ -40,4 +45,7 @@ public:
 
 private:
   bool showTexture = false;
+  #ifdef _USE_VIDEO
+  ofVideoPlayer 		vidPlayer;
+  #endif
 };
