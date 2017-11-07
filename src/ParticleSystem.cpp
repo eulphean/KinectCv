@@ -1,11 +1,10 @@
 #include "ParticleSystem.h"
 
 void ParticleSystem::update() {
-    for (int i = 0; i < 30; i++)
+    for (int i = 0; i < Max_Particles; i++)
     {
-        makeNewParticle(0, ofRandom(0, ofGetHeight()));
+        makeNewParticle(ofRandom(ofGetWidth()), 0);
     }
-
 
     ofRectangle screenRect(0, 0, ofGetWidth(), ofGetHeight());
 
@@ -21,13 +20,14 @@ void ParticleSystem::update() {
         iter->acceleration.x = 0.1;
 
         float distance = glm::distance(mouse, iter->position);
-
+      
+        // Change the force direction based on the bounding box of my position.
         glm::vec3 forceDirection = glm::normalize(mouse - iter->position) * -1;
-
         float forceStrength = ofMap(distance, 0, 200, 0.1, 0, true);
 
         iter->force = forceDirection * forceStrength;
-
+      
+        // Updating the particle properties. 
         iter->update();
 
         // Is the current particle on the screen?
@@ -67,8 +67,8 @@ void ParticleSystem::makeNewParticle(float x, float y)
     p.velocity.z = 0;
 
     // Set inital accelerations.
-    p.acceleration.x = 0.1;
-    p.acceleration.y = 0;
+    p.acceleration.x = 0;
+    p.acceleration.y = 0.1;
     p.acceleration.z = 0;
 
     // Set angular velocity.

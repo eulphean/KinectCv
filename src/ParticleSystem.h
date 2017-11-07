@@ -10,8 +10,10 @@ class ParticleSystem
 public:
   void update();
   void draw();
+  void setBoundingRectangles();
   
 private:
+  const int Max_Particles = 30;
   void makeNewParticle(float x, float y);
   vector<Particle> particles;
 };

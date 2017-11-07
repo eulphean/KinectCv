@@ -10,29 +10,34 @@ using namespace std;
 
 class ofApp : public ofBaseApp{
 
-	public:
-		void setup();
-		void update();
-		void draw();
-  
-    // Application GUI.
-    ofxPanel gui;
-  
-    // Kinect Gui group.
-    ofxGuiGroup kinectGroup;
-  
-    // Kinect.
-    ofxKinectV2 * kinect;
-    ofTexture texDepth;
-    ofTexture texRGB;
-  
-    // Contour Finder.
-    ofxCv::ContourFinder contourFinder;
-  
-    // OpenCV UI parameters. 
-    ofxGuiGroup cvGroup;
-    ofxFloatSlider minArea, maxArea, threshold;
-  
-    // Particle System
-    ParticleSystem particleSystem;
+public:
+  void setup();
+  void update();
+  void draw();
+
+  void keyPressed(int key);
+
+  // Application GUI.
+  ofxPanel gui;
+
+  // Kinect Gui group.
+  ofxGuiGroup kinectGroup;
+
+  // Kinect.
+  ofxKinectV2 * kinect;
+  ofTexture texDepth;
+  ofTexture texRGB;
+
+  // Contour Finder.
+  ofxCv::ContourFinder contourFinder;
+
+  // OpenCV UI parameters. 
+  ofxGuiGroup cvGroup;
+  ofxFloatSlider minArea, maxArea, threshold;
+
+  // Particle System
+  ParticleSystem particleSystem;
+
+private:
+  bool showTexture = false;
 };

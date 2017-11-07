@@ -67,21 +67,43 @@ void ofApp::update(){
       contourFinder.setMinAreaRadius(minArea);
       contourFinder.setMaxAreaRadius(maxArea);
       contourFinder.setThreshold(threshold);
+      
+      // Get the bounding rectangles. 
+      //vector<Rect> boundingRect = contourFinder.getBoundingRects();
+      
     }
 }
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-    // Depth texture.
-    texDepth.draw(0, 0);
-  
-    // Contours detected.
-    contourFinder.draw();
+   ofPushMatrix();
+      ofTranslate(ofGetWidth()/2, ofGetHeight()/2);
+      if (showTexture) {
+        // Depth texture.
+        texDepth.draw(0, 0);
+      }
+    
+      // Contours detected.
+      contourFinder.draw();
+    ofPopMatrix();
   
     // Draw the particle system.
     particleSystem.draw();
   
     // Draw GUI.
     gui.draw();
+}
+
+void ofApp::keyPressed(int key) {
+  switch (key) {
+    case 49: {
+      showTexture = !showTexture;
+      break;
+    }
+    
+    default: {
+      break;
+    }
+  }
 }
 
