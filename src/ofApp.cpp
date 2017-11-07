@@ -67,6 +67,7 @@ void ofApp::update(){
       // Do video related things.
       if (vidPlayer.isFrameNew()) {
         ofPixels depthPixels = vidPlayer.getPixels();
+        texDepth.loadData(depthPixels);
         depthImgMat = toCv(depthPixels);
         
         // Find contours.
@@ -111,22 +112,31 @@ void ofApp::update(){
 
 //--------------------------------------------------------------
 void ofApp::draw(){
+  
+   // Clean way to center the texture getting captured with the Contour detected.
+   // We want these to be in the center of the screen for our algorithm to work
+   // smoothly.
    ofPushMatrix();
-      ofTranslate(ofGetWidth()/2, ofGetHeight()/2);
-      /*if (showTexture) {
-        // Depth texture.
-        texDepth.draw(0, 0);
-      }*/
-    
-      // Contours detected.
-      contourFinder.draw();
-    ofPopMatrix();
   
-    // Draw the particle system.
-    particleSystem.draw();
+    ofTranslate(ofGetWidth()/2, ofGetHeight()/2);
+      ofPushMatrix();
   
-    // Draw GUI.
-    gui.draw();
+        ofTranslate(-texDepth.getWidth()/2, -texDepth.getHeight()/2);
+          if (showTexture) {
+            // Depth texture.
+            texDepth.draw(0, 0);
+          }
+          // Contours detected.
+          contourFinder.draw();
+  
+      ofPopMatrix();
+  ofPopMatrix();
+
+  // Draw the particle system.
+  particleSystem.draw();
+
+  // Draw GUI.
+  gui.draw();
 }
 
 void ofApp::keyPressed(int key) {
