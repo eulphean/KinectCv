@@ -4,6 +4,7 @@
 #include "ofxKinectV2.h"
 #include "ofxGui.h"
 #include "ofxCv.h"
+#include "ParticleSystem.h"
 
 using namespace std;
 
@@ -31,4 +32,7 @@ class ofApp : public ofBaseApp{
     // OpenCV UI parameters. 
     ofxGuiGroup cvGroup;
     ofxFloatSlider minArea, maxArea, threshold;
+  
+    // Particle System
+    ParticleSystem particleSystem;
 };

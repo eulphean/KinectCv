@@ -44,6 +44,8 @@ void ofApp::setup(){
 
 //--------------------------------------------------------------
 void ofApp::update(){
+    particleSystem.update();
+  
     // Update Kinect.
     kinect->update();
   
@@ -71,10 +73,13 @@ void ofApp::update(){
 //--------------------------------------------------------------
 void ofApp::draw(){
     // Depth texture.
-    texDepth.draw();
+    texDepth.draw(0, 0);
   
     // Contours detected.
     contourFinder.draw();
+  
+    // Draw the particle system.
+    particleSystem.draw();
   
     // Draw GUI.
     gui.draw();
