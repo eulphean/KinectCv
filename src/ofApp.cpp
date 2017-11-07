@@ -63,6 +63,7 @@ void ofApp::update(){
   
     #ifdef _USE_VIDEO
   
+      // Video player related logic.
       vidPlayer.update();
       // Do video related things.
       if (vidPlayer.isFrameNew()) {
@@ -76,7 +77,7 @@ void ofApp::update(){
   
     #else
   
-    // Do Kinect related things.
+      // Kinect related logic.
       if (kinect != nullptr) {
           // Update Kinect.
           kinect->update();
