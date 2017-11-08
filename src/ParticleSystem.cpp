@@ -1,76 +1,43 @@
 #include "ParticleSystem.h"
 
-// Come back and clean this.
-void ParticleSystem::update(ofPolyline poly) {
+void ParticleSystem::updateWithPoly(ofPolyline poly) {
     for (int i = 0; i < Max_Particles; i++)
     {
-        makeNewParticle(ofRandom(ofGetWidth()), 0);
+      makeNewParticle(ofRandom(ofGetWidth()), 0);
     }
 
     ofRectangle screenRect(0, 0, ofGetWidth(), ofGetHeight());
   
-    // Get an iterator that points to the first element in our vector.
-    auto iter = particles.begin();
-
-    // Iterate through all particles.
-    while (iter != particles.end())
-    {
-        // Set our standard acceleration.
-        iter->acceleration.y = 0.1;
-  
-        float distance;
-        glm::vec3 forceDirection;
-        // Change the force direction of the particle if it's inside the polyline.
-        if (poly.inside(iter->position)) {
-          glm::vec3 closestPoint = poly.getClosestPoint(iter->position);
-          distance = glm::distance(closestPoint, iter->position);
-          forceDirection = glm::normalize(iter->position - closestPoint) * -1;
-        }
-      
-        float forceStrength = ofMap(distance, 0, 10, 0, 5, true);
-
-        iter->force = forceDirection * forceStrength;
-      
-        // Updating the particle properties. 
-        iter->update();
-
-        // Is the current particle on the screen?
-        if (screenRect.inside(iter->position) == false)
-        {
-            iter = particles.erase(iter);
-        }
-        else
-        {
-            iter++;
-        }
-    }
-}
-
-void ParticleSystem::update() {
-    for (int i = 0; i < Max_Particles; i++)
-    {
-        makeNewParticle(ofRandom(ofGetWidth()), 0);
-    }
-
-    ofRectangle screenRect(0, 0, ofGetWidth(), ofGetHeight());
-
     glm::vec3 mouse(ofGetMouseX(), ofGetMouseY(), 0);
 
     // Get an iterator that points to the first element in our vector.
     auto iter = particles.begin();
-
+  
     // Iterate through all particles.
     while (iter != particles.end())
     {
-        // Set our standard acceleration.
-        iter->acceleration.x = 0.1;
-
-        float distance = glm::distance(mouse, iter->position);
+        // We want to accelerate downwards.
+        iter->acceleration.y = 0.1;
       
-        // Change the force direction based on the bounding box of my position.
-        glm::vec3 forceDirection = glm::normalize(mouse - iter->position) * -1;
-        float forceStrength = ofMap(distance, 0, 200, 0.1, 0, true);
-
+        float distance, forceStrength;
+        glm::vec3 forceDirection;
+      
+        if (poly.getVertices().size() > 0) {
+          // Change the force direction of the particle if it's inside the polyline.
+          if (poly.inside(iter->position)) {
+            glm::vec3 closestPoint = poly.getClosestPoint(iter->position);
+            
+            distance = glm::distance(closestPoint, iter->position);
+            forceDirection = glm::normalize(iter->position - closestPoint) * -1;
+            forceStrength = ofMap(distance, 0, 10, 0, 5, true);
+          }
+        } else { // Use mouse pointer if there is no polyline.
+          distance = glm::distance(mouse, iter->position);
+          forceDirection = glm::normalize(mouse - iter->position) * -1;
+          forceStrength = ofMap(distance, 0, 200, 0.1, 0, true);
+        }
+      
+        // Update force.
         iter->force = forceDirection * forceStrength;
       
         // Updating the particle properties. 
@@ -86,11 +53,6 @@ void ParticleSystem::update() {
             iter++;
         }
     }
-}
-
-void ParticleSystem::update(ofPolyline poly) {
-
-
 }
 
 void ParticleSystem::draw() {

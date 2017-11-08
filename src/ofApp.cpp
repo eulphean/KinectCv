@@ -139,13 +139,10 @@ void ofApp::update(){
       
       // Create a new polyline with updated vertices.
       newPoly.addVertices(vertices);
-      
-      // Pass the newPoly to Particle System's update function.
-      particleSystem.update(newPoly);
-    } else {
-      // Update Particle System.
-      particleSystem.update();
     }
+  
+    // Pass the newPoly to Particle System's update function.
+    particleSystem.updateWithPoly(newPoly);
 }
 
 //--------------------------------------------------------------
