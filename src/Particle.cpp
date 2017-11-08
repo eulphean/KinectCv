@@ -35,7 +35,7 @@ void Particle::draw()
     ofRotateYDeg(orientation.y);
     ofRotateZDeg(orientation.z);
 
-    ofDrawAxis(40);
+    ofDrawAxis(3);
 
     ofPopMatrix();
 }

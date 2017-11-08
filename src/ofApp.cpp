@@ -128,6 +128,7 @@ void ofApp::update(){
   
     // Translate algorithm for each vertex of the polyline.
     if (polylines.size() > 0) {
+        // then a person is here
       vector<glm::vec3> vertices = polylines[0].getVertices();
       
       // Add the offset distances to each vertex of the polyline to
@@ -139,6 +140,11 @@ void ofApp::update(){
       
       // Create a new polyline with updated vertices.
       newPoly.addVertices(vertices);
+    }
+    else
+    {
+        // no contours
+        
     }
   
     // Pass the newPoly to Particle System's update function.

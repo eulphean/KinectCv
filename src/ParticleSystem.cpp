@@ -10,6 +10,7 @@ void ParticleSystem::updateWithPoly(ofPolyline poly) {
   
     glm::vec3 mouse(ofGetMouseX(), ofGetMouseY(), 0);
 
+    
     // Get an iterator that points to the first element in our vector.
     auto iter = particles.begin();
   
@@ -17,32 +18,35 @@ void ParticleSystem::updateWithPoly(ofPolyline poly) {
     while (iter != particles.end())
     {
         // We want to accelerate downwards.
+        iter->acceleration.x = 0;
         iter->acceleration.y = 0.1;
-      
-        float distance, forceStrength;
-        glm::vec3 forceDirection;
-      
+        iter->acceleration.z = 0;
+       
         if (poly.getVertices().size() > 0) {
           // Change the force direction of the particle if it's inside the polyline.
-          if (poly.inside(iter->position)) {
-            glm::vec3 closestPoint = poly.getClosestPoint(iter->position);
-            
-            distance = glm::distance(closestPoint, iter->position);
-            forceDirection = glm::normalize(iter->position - closestPoint) * -1;
-            forceStrength = ofMap(distance, 0, 10, 0, 5, true);
+          if (poly.getBoundingBox().inside(iter->position.xy))
+          {
+              while (poly.inside(iter->position))
+              {
+                  if (iter->position.x > poly.getBoundingBox().getCenter().x)
+                  {
+                      iter->position.x += 10;
+                  }
+                  else
+                  {
+                      iter->position.x -= 10;
+                  }
+                  
+                  
+                  iter->position.y -= 10;
+              }
+              
           }
-        } else { // Use mouse pointer if there is no polyline.
-          distance = glm::distance(mouse, iter->position);
-          forceDirection = glm::normalize(mouse - iter->position) * -1;
-          forceStrength = ofMap(distance, 0, 200, 0.1, 0, true);
         }
-      
-        // Update force.
-        iter->force = forceDirection * forceStrength;
-      
-        // Updating the particle properties. 
+        
+        // Updating the particle properties.
         iter->update();
-
+        
         // Is the current particle on the screen?
         if (screenRect.inside(iter->position) == false)
         {
@@ -52,6 +56,7 @@ void ParticleSystem::updateWithPoly(ofPolyline poly) {
         {
             iter++;
         }
+        
     }
 }
 
