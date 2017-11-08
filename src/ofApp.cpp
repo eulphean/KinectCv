@@ -15,6 +15,13 @@ void ofApp::setup(){
       vidPlayer.play();
       vidPlayer.setLoopState(OF_LOOP_NORMAL);
   
+      ofPoint center;
+      center.x = ofGetWidth()/2 - vidPlayer.getWidth()/2;
+      center.y = ofGetHeight()/2 - vidPlayer.getHeight()/2;
+  
+      // Anchor the video to the center.
+      vidPlayer.setAnchorPoint(center.x, center.y);
+  
     #else
   
       // Check if we have a Kinect device connected.
@@ -56,10 +63,18 @@ void ofApp::setup(){
 
 //--------------------------------------------------------------
 void ofApp::update(){
-    particleSystem.update();
-  
+    // Clear the polyline.
+    newPoly.clear();
+
+    // Set contourFinder with sliders to get the right value for contour finding.
+    contourFinder.setMinAreaRadius(minArea);
+    contourFinder.setMaxAreaRadius(maxArea);
+    contourFinder.setThreshold(threshold);
+
     // Depth image matrix that we will pass to Contour finder.
     Mat depthImgMat;
+  
+    float widthOffset, heightOffset;
   
     #ifdef _USE_VIDEO
   
@@ -70,6 +85,10 @@ void ofApp::update(){
         ofPixels depthPixels = vidPlayer.getPixels();
         texDepth.loadData(depthPixels);
         depthImgMat = toCv(depthPixels);
+        
+        // Offset distances to center the polyline.
+        widthOffset = ofGetWidth()/2 - depthPixels.getWidth()/2;
+        heightOffset = ofGetHeight()/2 - depthPixels.getHeight()/2;
         
         // Find contours.
         contourFinder.findContours(depthImgMat);
@@ -94,25 +113,50 @@ void ofApp::update(){
             // ofxCv to process the depth pixels and find countours.
             depthImgMat = toCv(depthPixels);
             
+            // Offset distances to center the polyline.
+            widthOffset = ofGetWidth()/2 - depthPixels.getWidth()/2;
+            heightOffset = ofGetHeight()/2 - depthPixrls.getHeight()/2;
+            
             // Find contours.
             contourFinder.findContours(depthImgMat);
-            
-            // Get the bounding rectangles. 
-            //vector<Rect> boundingRect = contourFinder.getBoundingRects();
-            
           }
       }
   
     #endif
   
-    // Tweak the countours with sliders to get the right value for the setup.
-    contourFinder.setMinAreaRadius(minArea);
-    contourFinder.setMaxAreaRadius(maxArea);
-    contourFinder.setThreshold(threshold);
+    vector <ofPolyline> polylines = contourFinder.getPolylines();
+  
+    // Translate algorithm for each vertex of the polyline.
+    if (polylines.size() > 0) {
+      vector<glm::vec3> vertices = polylines[0].getVertices();
+      
+      // Add the offset distances to each vertex of the polyline to
+      // center it in the screen.
+      for (int i = 0; i < vertices.size(); i++) {
+        vertices[i].x += widthOffset;
+        vertices[i].y += heightOffset;
+      }
+      
+      // Create a new polyline with updated vertices.
+      newPoly.addVertices(vertices);
+      
+      // Pass the newPoly to Particle System's update function.
+      particleSystem.update(newPoly);
+    } else {
+      // Update Particle System.
+      particleSystem.update();
+    }
 }
 
 //--------------------------------------------------------------
 void ofApp::draw(){
+
+    // Don't translate this since all the vertices are internally
+    // translated to provide to the particle system.
+    if (newPoly.getVertices().size() > 0) {
+      ofSetColor(ofColor::white);
+      newPoly.draw();
+    }
   
    // Clean way to center the texture getting captured with the Contour detected.
    // We want these to be in the center of the screen for our algorithm to work
@@ -123,12 +167,11 @@ void ofApp::draw(){
       ofPushMatrix();
   
         ofTranslate(-texDepth.getWidth()/2, -texDepth.getHeight()/2);
+  
           if (showTexture) {
             // Depth texture.
             texDepth.draw(0, 0);
           }
-          // Contours detected.
-          contourFinder.draw();
   
       ofPopMatrix();
   ofPopMatrix();

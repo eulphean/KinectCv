@@ -48,4 +48,6 @@ private:
   #ifdef _USE_VIDEO
   ofVideoPlayer 		vidPlayer;
   #endif
+  
+  ofPolyline newPoly;
 };

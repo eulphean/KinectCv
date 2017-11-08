@@ -1,5 +1,57 @@
 #include "ParticleSystem.h"
 
+// Come back and clean this.
+void ParticleSystem::update(ofPolyline poly) {
+  for (int i = 0; i < Max_Particles; i++)
+    {
+        makeNewParticle(ofRandom(ofGetWidth()), 0);
+    }
+
+    ofRectangle screenRect(0, 0, ofGetWidth(), ofGetHeight());
+
+    //glm::vec3 mouse(ofGetMouseX(), ofGetMouseY(), 0);
+
+    // Get an iterator that points to the first element in our vector.
+    auto iter = particles.begin();
+
+    // Iterate through all particles.
+    while (iter != particles.end())
+    {
+        // Set our standard acceleration.
+        iter->acceleration.x = 0.1;
+
+        //float distance = glm::distance(mouse, iter->position);
+      
+        glm::vec3 pos(iter->position.x, iter->position.y, iter->position.z);
+        glm::vec3 forceDirection;
+      
+        // Change the force direction based on the bounding box of my position.
+        if (poly.inside(pos)) {
+          //forceDirection = glm::normalize(pos - poly.getClosestPoint(pos)) * -5;
+          iter = particles.erase(iter);
+        } else {
+          //forceDirection = glm::normalize(mouse - iter->position) * -1;
+        }
+      
+        //float forceStrength = ofMap(distance, 0, 200, 0.1, 0, true);
+
+       // iter->force = forceDirection * forceStrength;
+      
+        // Updating the particle properties. 
+        iter->update();
+
+        // Is the current particle on the screen?
+        if (screenRect.inside(iter->position) == false)
+        {
+            iter = particles.erase(iter);
+        }
+        else
+        {
+            iter++;
+        }
+    }
+}
+
 void ParticleSystem::update() {
     for (int i = 0; i < Max_Particles; i++)
     {

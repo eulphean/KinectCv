@@ -9,6 +9,9 @@ class ParticleSystem
 {
 public:
   void update();
+  // Overloaded update() with a polyline passed for the contour.
+  void update(ofPolyline poly);
+  
   void draw();
   void setBoundingRectangles();
   
