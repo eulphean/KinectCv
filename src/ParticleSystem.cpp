@@ -2,15 +2,13 @@
 
 // Come back and clean this.
 void ParticleSystem::update(ofPolyline poly) {
-  for (int i = 0; i < Max_Particles; i++)
+    for (int i = 0; i < Max_Particles; i++)
     {
         makeNewParticle(ofRandom(ofGetWidth()), 0);
     }
 
     ofRectangle screenRect(0, 0, ofGetWidth(), ofGetHeight());
-
-    //glm::vec3 mouse(ofGetMouseX(), ofGetMouseY(), 0);
-
+  
     // Get an iterator that points to the first element in our vector.
     auto iter = particles.begin();
 
@@ -18,24 +16,20 @@ void ParticleSystem::update(ofPolyline poly) {
     while (iter != particles.end())
     {
         // Set our standard acceleration.
-        iter->acceleration.x = 0.1;
-
-        //float distance = glm::distance(mouse, iter->position);
-      
-        glm::vec3 pos(iter->position.x, iter->position.y, iter->position.z);
+        iter->acceleration.y = 0.1;
+  
+        float distance;
         glm::vec3 forceDirection;
-      
-        // Change the force direction based on the bounding box of my position.
-        if (poly.inside(pos)) {
-          //forceDirection = glm::normalize(pos - poly.getClosestPoint(pos)) * -5;
-          iter = particles.erase(iter);
-        } else {
-          //forceDirection = glm::normalize(mouse - iter->position) * -1;
+        // Change the force direction of the particle if it's inside the polyline.
+        if (poly.inside(iter->position)) {
+          glm::vec3 closestPoint = poly.getClosestPoint(iter->position);
+          distance = glm::distance(closestPoint, iter->position);
+          forceDirection = glm::normalize(iter->position - closestPoint) * -1;
         }
       
-        //float forceStrength = ofMap(distance, 0, 200, 0.1, 0, true);
+        float forceStrength = ofMap(distance, 0, 10, 0, 5, true);
 
-       // iter->force = forceDirection * forceStrength;
+        iter->force = forceDirection * forceStrength;
       
         // Updating the particle properties. 
         iter->update();
@@ -92,6 +86,11 @@ void ParticleSystem::update() {
             iter++;
         }
     }
+}
+
+void ParticleSystem::update(ofPolyline poly) {
+
+
 }
 
 void ParticleSystem::draw() {
