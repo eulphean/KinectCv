@@ -35,7 +35,9 @@ tgnore generated binaries
 xcuserdata
 *.xcworkspace
 *.xcuserstate
-
+*.xcconfig
+*.plist
+*.xcodeproj/
 # Code::Blocks
 *.depend
 *.layout
