@@ -8,7 +8,7 @@ void ofApp::setup(){
     ofBackground(ofColor::black);
     ofSetVerticalSync(true);
   
-    // GUI setup.
+    // Load GUI from a pre-saved XML file.
     gui.setup();
   
     #ifdef _USE_VIDEO
@@ -39,15 +39,14 @@ void ofApp::setup(){
         return;
       }
     
-      kinectGroup.setup("Kinect", "settings.xml", 10, 100);
+      kinectGroup.setup("Kinect");
     
       // Setup Kinect. [Assumption] Only a single Kinect will be
       // connected to the system.
       kinect = new ofxKinectV2();
       kinect->open(deviceList[0].serial);
       kinectGroup.add(kinect->params);
-    
-      kinectGroup.loadFromFile("settings.xml");
+  
       gui.add(&kinectGroup);
   
     #endif
@@ -60,6 +59,9 @@ void ofApp::setup(){
   
     // Add the groups to main GUI.
     gui.add(&cvGroup);
+  
+    // Restore the GUI from XML file.
+    gui.loadFromFile("kinectCv.xml");
 }
 
 //--------------------------------------------------------------
@@ -207,3 +209,6 @@ void ofApp::keyPressed(int key) {
   }
 }
 
+void ofApp::exit() {
+  gui.saveToFile("kinectCv.xml");
+}

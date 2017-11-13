@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<group>
+	<Kinect>
+		<kinectV2_502087641942>
+			<minDistance>10</minDistance>
+			<maxDistance>6000</maxDistance>
+		</kinectV2_502087641942>
+	</Kinect>
+	<openCv>
+		<Min_area>70</Min_area>
+		<Max_area>370</Max_area>
+		<Threshold>160</Threshold>
+	</openCv>
+</group>
