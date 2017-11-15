@@ -19,6 +19,8 @@ public:
   void setup();
   void update();
   void draw();
+  void updatePolyline(float widthOffset, float heightOffset);
+  void exit();
 
   void keyPressed(int key);
 

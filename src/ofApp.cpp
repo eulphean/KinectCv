@@ -8,12 +8,16 @@ void ofApp::setup(){
     ofBackground(ofColor::black);
     ofSetVerticalSync(true);
   
+    // Load GUI from a pre-saved XML file.
+    gui.setup();
+  
     #ifdef _USE_VIDEO
   
       // Load a video.
       vidPlayer.load("fingers.mov");
       vidPlayer.play();
       vidPlayer.setLoopState(OF_LOOP_NORMAL);
+      vidPlayer.setVolume(0);
   
       ofPoint center;
       center.x = ofGetWidth()/2 - vidPlayer.getWidth()/2;
@@ -35,21 +39,17 @@ void ofApp::setup(){
         return;
       }
     
-      kinectGroup.setup("Kinect", "settings.xml", 10, 100);
+      kinectGroup.setup("Kinect");
     
       // Setup Kinect. [Assumption] Only a single Kinect will be
       // connected to the system.
       kinect = new ofxKinectV2();
       kinect->open(deviceList[0].serial);
       kinectGroup.add(kinect->params);
-    
-      kinectGroup.loadFromFile("settings.xml");
+  
       gui.add(&kinectGroup);
   
     #endif
-  
-    // GUI setup.
-    gui.setup();
   
     // openCv GUI.
     cvGroup.setup("openCv");
@@ -59,6 +59,9 @@ void ofApp::setup(){
   
     // Add the groups to main GUI.
     gui.add(&cvGroup);
+  
+    // Restore the GUI from XML file.
+    gui.loadFromFile("kinectCv.xml");
 }
 
 //--------------------------------------------------------------
@@ -74,7 +77,8 @@ void ofApp::update(){
     // Depth image matrix that we will pass to Contour finder.
     Mat depthImgMat;
   
-    float widthOffset, heightOffset;
+    float widthOffset = 0;
+    float heightOffset = 0;
   
     #ifdef _USE_VIDEO
   
@@ -92,6 +96,7 @@ void ofApp::update(){
         
         // Find contours.
         contourFinder.findContours(depthImgMat);
+        updatePolyline(widthOffset, heightOffset);
       }
   
     #else
@@ -115,24 +120,27 @@ void ofApp::update(){
             
             // Offset distances to center the polyline.
             widthOffset = ofGetWidth()/2 - depthPixels.getWidth()/2;
-            heightOffset = ofGetHeight()/2 - depthPixrls.getHeight()/2;
+            heightOffset = ofGetHeight()/2 - depthPixels.getHeight()/2;
             
             // Find contours.
             contourFinder.findContours(depthImgMat);
+            updatePolyline(widthOffset, heightOffset);
           }
       }
   
     #endif
-  
+}
+
+void ofApp::updatePolyline(float widthOffset, float heightOffset) {
     vector <ofPolyline> polylines = contourFinder.getPolylines();
   
     // Translate algorithm for each vertex of the polyline.
     if (polylines.size() > 0) {
-        // then a person is here
+      // Then a person is here.
       vector<glm::vec3> vertices = polylines[0].getVertices();
       
       // Add the offset distances to each vertex of the polyline to
-      // center it in the screen.
+      // center it on the screen.
       for (int i = 0; i < vertices.size(); i++) {
         vertices[i].x += widthOffset;
         vertices[i].y += heightOffset;
@@ -140,11 +148,13 @@ void ofApp::update(){
       
       // Create a new polyline with updated vertices.
       newPoly.addVertices(vertices);
+      
+      // Get a smooth version of the polyline.
+      newPoly = newPoly.getSmoothed(2);
     }
     else
     {
-        // no contours
-        
+        // No contours. 
     }
   
     // Pass the newPoly to Particle System's update function.
@@ -156,7 +166,7 @@ void ofApp::draw(){
 
     // Don't translate this since all the vertices are internally
     // translated to provide to the particle system.
-    if (newPoly.getVertices().size() > 0) {
+    if (newPoly.getVertices().size() > 0 && newPoly.hasChanged()) {
       ofSetColor(ofColor::white);
       newPoly.draw();
     }
@@ -199,3 +209,6 @@ void ofApp::keyPressed(int key) {
   }
 }
 
+void ofApp::exit() {
+  gui.saveToFile("kinectCv.xml");
+}
