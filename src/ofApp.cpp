@@ -39,6 +39,9 @@ void ofApp::setup(){
         return;
       }
     
+    // Resized FBO texture.
+    myNewTexture.allocate(600, 600, GL_RGBA);
+    
       kinectGroup.setup("Kinect");
     
       // Setup Kinect. [Assumption] Only a single Kinect will be
@@ -109,11 +112,14 @@ void ofApp::update(){
           if (kinect->isFrameNew()) {
             // Depth and RGB image from the Kinect.
             // TODO: If not using RGB image, comment that out.
-            texDepth.loadData(kinect->getDepthPixels());
-            texRGB.loadData(kinect->getRgbPixels());
-            
-            // Depth pixels.
+              // Depth pixels.
             ofPixels depthPixels = kinect->getDepthPixels();
+            int w = depthPixels.getWidth();
+            int h = depthPixels.getHeight();
+            depthPixels.resize(w*1.5, h*1.5, OF_INTERPOLATE_NEAREST_NEIGHBOR);
+              
+            texDepth.loadData(depthPixels);
+              
             // Convert depth pixels into OpenGL Mat data type. This is required for
             // ofxCv to process the depth pixels and find countours.
             depthImgMat = toCv(depthPixels);
@@ -168,7 +174,7 @@ void ofApp::draw(){
     // translated to provide to the particle system.
     if (newPoly.getVertices().size() > 0 && newPoly.hasChanged()) {
       ofSetColor(ofColor::white);
-      newPoly.draw();
+        newPoly.draw();
     }
   
    // Clean way to center the texture getting captured with the Contour detected.

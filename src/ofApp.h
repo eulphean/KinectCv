@@ -11,7 +11,7 @@ using namespace std;
 // This flag uses a pre-stored background subtracted
 // video. Comment this line to use the Kinect, which is
 // connected.
-#define _USE_VIDEO
+//#define _USE_VIDEO
 
 class ofApp : public ofBaseApp{
 
@@ -44,6 +44,8 @@ public:
 
   // Particle System
   ParticleSystem particleSystem;
+    
+    ofFbo myNewTexture;
 
 private:
   bool showTexture = false;
